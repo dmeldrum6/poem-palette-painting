@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Poem × Palette × Painting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <h1 class="site-title">Poem &times; Palette &times; Painting</h1>
+      <button class="generate-btn" id="generateBtn" aria-label="Generate new poem">
+        Generate <span class="generate-btn__arrow" aria-hidden="true">&rarr;</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="loading-overlay" id="loadingOverlay" aria-live="polite" aria-label="Loading content">
+      <span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+    </div>
+
+    <div class="content-grid" id="contentGrid">
+      <!-- Poem Column -->
+      <section class="poem-section" id="poemSection">
+        <div class="poem-meta">
+          <p class="poem-author" id="poemAuthor"></p>
+        </div>
+        <h2 class="poem-title" id="poemTitle"></h2>
+        <div class="poem-lines" id="poemLines"></div>
+      </section>
+
+      <!-- Painting Column -->
+      <section class="painting-section" id="paintingSection">
+        <div class="painting-frame" id="paintingFrame">
+          <img class="painting-image" id="paintingImage" alt="" />
+        </div>
+        <div class="painting-meta">
+          <h3 class="painting-title" id="paintingTitle"></h3>
+          <p class="painting-artist" id="paintingArtist"></p>
+          <div class="cluster-label" id="clusterLabel"></div>
+        </div>
+      </section>
+
+      <!-- Palette Row (spans full width) -->
+      <div class="palette-row" id="paletteRow">
+        <div class="palette-swatches" id="paletteSwatches"></div>
+      </div>
+    </div>
+
+    <div class="error-message" id="errorMessage" role="alert" aria-live="assertive"></div>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

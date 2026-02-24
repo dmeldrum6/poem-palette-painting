@@ -1,0 +1,443 @@
+/* ============================================================
+   BASE & RESET
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #faf8f5;
+  --ink: #1a1814;
+  --ink-light: #6b6660;
+  --ink-faint: #c4bfb8;
+  --rule: #e8e4de;
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --max-width: 1200px;
+  --header-h: 64px;
+  --gap: 48px;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
+  height: var(--header-h);
+}
+
+.site-header__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+.generate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.55em 1.2em;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  border-radius: 2px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.generate-btn:hover {
+  background: #3a3530;
+}
+
+.generate-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.generate-btn__arrow {
+  transition: transform 0.15s ease;
+}
+
+.generate-btn:not(:disabled):hover .generate-btn__arrow {
+  transform: translateX(3px);
+}
+
+/* ============================================================
+   MAIN CONTENT AREA
+   ============================================================ */
+
+.main-content {
+  position: relative;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--gap);
+}
+
+/* ============================================================
+   LOADING OVERLAY
+   ============================================================ */
+
+.loading-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(250, 248, 245, 0.82);
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.loading-overlay.visible {
+  display: flex;
+}
+
+.loading-dots {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  color: var(--ink-light);
+  letter-spacing: 0.2em;
+}
+
+.loading-dots span {
+  display: inline-block;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes pulse {
+  0%, 80%, 100% { opacity: 0.2; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-6px); }
+}
+
+/* ============================================================
+   CONTENT GRID
+   ============================================================ */
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: var(--gap);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.content-grid.visible {
+  opacity: 1;
+}
+
+/* Palette row spans both columns */
+.palette-row {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--rule);
+  padding-top: var(--gap);
+}
+
+/* ============================================================
+   POEM SECTION
+   ============================================================ */
+
+.poem-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.poem-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.poem-author {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+}
+
+.poem-title {
+  font-family: var(--font-serif);
+  font-size: 1.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.poem-lines {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.85;
+  color: var(--ink);
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.poem-lines p {
+  margin: 0;
+  min-height: 1em;
+}
+
+/* Scrollbar styling for poem */
+.poem-lines::-webkit-scrollbar {
+  width: 3px;
+}
+.poem-lines::-webkit-scrollbar-track {
+  background: transparent;
+}
+.poem-lines::-webkit-scrollbar-thumb {
+  background: var(--ink-faint);
+  border-radius: 2px;
+}
+
+/* ============================================================
+   PAINTING SECTION
+   ============================================================ */
+
+.painting-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.painting-frame {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--ink-faint);
+  overflow: hidden;
+  border-radius: 1px;
+  position: relative;
+}
+
+/* Anchor color tint while image loads — set via JS inline style */
+.painting-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  z-index: 1;
+  transition: opacity 0.4s ease;
+}
+
+.painting-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.painting-image.loaded {
+  opacity: 1;
+}
+
+.painting-title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.painting-artist {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--ink-light);
+  line-height: 1.5;
+}
+
+/* Cluster label */
+.cluster-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 0.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  border-top: 1px solid var(--rule);
+  padding-top: 0.75rem;
+}
+
+.cluster-label__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   PALETTE SWATCHES
+   ============================================================ */
+
+.palette-swatches {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  height: 64px;
+}
+
+.swatch {
+  flex: 1;
+  border-radius: 2px;
+  position: relative;
+  cursor: default;
+  transition: transform 0.15s ease;
+  overflow: hidden;
+}
+
+.swatch:hover {
+  transform: scaleY(1.08);
+  transform-origin: bottom;
+  z-index: 2;
+}
+
+.swatch__hex {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+  white-space: nowrap;
+  transition: opacity 0.15s ease;
+  /* Color set dynamically based on swatch brightness */
+}
+
+.swatch:hover .swatch__hex {
+  opacity: 1;
+}
+
+/* ============================================================
+   ERROR MESSAGE
+   ============================================================ */
+
+.error-message {
+  display: none;
+  margin-top: 2rem;
+  padding: 1rem 1.25rem;
+  border-left: 3px solid var(--ink-faint);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--ink-light);
+  line-height: 1.5;
+}
+
+.error-message.visible {
+  display: block;
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE
+   ============================================================ */
+
+@media (max-width: 720px) {
+  :root {
+    --gap: 28px;
+  }
+
+  .site-title {
+    font-size: 0.95rem;
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* On mobile: poem, then palette, then painting */
+  .poem-section   { order: 1; }
+  .palette-row    { order: 2; grid-column: 1; }
+  .painting-section { order: 3; }
+
+  .poem-title {
+    font-size: 1.5rem;
+  }
+
+  .poem-lines {
+    max-height: none;
+  }
+
+  .painting-frame {
+    aspect-ratio: 3 / 2;
+  }
+
+  .palette-swatches {
+    height: 48px;
+  }
+}
+
+@media (max-width: 420px) {
+  .site-header__inner {
+    padding: 0 1rem;
+  }
+
+  .main-content {
+    padding: var(--gap) 1rem;
+  }
+
+  .site-title {
+    font-size: 0.82rem;
+  }
+
+  .generate-btn {
+    font-size: 0.78rem;
+    padding: 0.5em 0.9em;
+  }
+}
