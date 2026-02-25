@@ -39,14 +39,22 @@ async function generate() {
     renderPoem(poem);
     renderClusterLabel(scoreResult.winner, scoreResult.runnerUp);
 
-    // Step 4: fetch palette + painting in parallel
-    const [palette, painting] = await Promise.all([
+    // Step 4: fetch palette + painting in parallel, independently so a
+    // painting failure doesn't prevent the palette from rendering
+    const [paletteResult, paintingResult] = await Promise.allSettled([
       fetchPalette(anchorHSL),
       fetchPainting(anchorHSL)
     ]);
 
-    renderPalette(palette);
-    renderPainting(painting, anchorHSL);
+    if (paletteResult.status === 'fulfilled') {
+      renderPalette(paletteResult.value);
+    }
+
+    if (paintingResult.status === 'fulfilled') {
+      renderPainting(paintingResult.value, anchorHSL);
+    } else {
+      throw paintingResult.reason;
+    }
 
   } catch (err) {
     console.error('Generate error:', err);
@@ -242,15 +250,24 @@ async function fetchPainting(anchorHSL) {
 }
 
 async function fetchArticResults(minH, maxH) {
-  const params = new URLSearchParams({
-    q: 'painting',
-    'query[range][color_h][gte]': String(Math.round(minH)),
-    'query[range][color_h][lte]': String(Math.round(maxH)),
-    'query[exists][field]': 'image_id',
-    fields: 'id,title,artist_display,date_display,image_id,color',
-    limit: '10'
+  // Use POST with JSON body so Elasticsearch query brackets aren't percent-encoded
+  const res = await fetch('https://api.artic.edu/api/v1/artworks/search', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      q: 'painting',
+      query: {
+        bool: {
+          filter: [
+            { range: { color_h: { gte: Math.round(minH), lte: Math.round(maxH) } } },
+            { exists: { field: 'image_id' } }
+          ]
+        }
+      },
+      fields: ['id', 'title', 'artist_display', 'date_display', 'image_id', 'color'],
+      limit: 10
+    })
   });
-  const res = await fetch(`https://api.artic.edu/api/v1/artworks/search?${params}`);
   if (!res.ok) throw new Error("Couldn't reach the museum — try again.");
   const data = await res.json();
   // Filter to only artworks that actually have an image_id
