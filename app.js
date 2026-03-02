@@ -158,9 +158,9 @@ function deriveAnchorColor(scoreResult) {
 async function fetchPalette(anchorHSL) {
   const rgb = hslToRgb(anchorHSL.h, anchorHSL.s, anchorHSL.l);
 
-  // Try HTTPS first, fall back to algorithm if unavailable
+  // Colormind is HTTP only — use fallback palette if blocked by mixed content
   try {
-    const res = await fetch('https://colormind.io/api/', {
+    const res = await fetch('http://colormind.io/api/', {
       method: 'POST',
       body: JSON.stringify({
         model: 'default',
@@ -222,8 +222,10 @@ async function fetchPainting(anchorHSL) {
         fetchArticResults(0, wrappedMax)
       ]);
       const combined = [...resA, ...resB];
-      if (combined.length === 0) throw new Error("Couldn't reach the museum — try again.");
-      return pickRandom(combined);
+      if (combined.length > 0) return pickRandom(combined);
+      const fb1 = await fetchArticResultsFallback();
+      if (fb1.length === 0) throw new Error("Couldn't reach the museum — try again.");
+      return pickRandom(fb1);
     } else {
       // maxH > 360
       const [resA, resB] = await Promise.all([
@@ -231,19 +233,24 @@ async function fetchPainting(anchorHSL) {
         fetchArticResults(0, wrappedMax)
       ]);
       const combined = [...resA, ...resB];
-      if (combined.length === 0) throw new Error("Couldn't reach the museum — try again.");
-      return pickRandom(combined);
+      if (combined.length > 0) return pickRandom(combined);
+      const fb2 = await fetchArticResultsFallback();
+      if (fb2.length === 0) throw new Error("Couldn't reach the museum — try again.");
+      return pickRandom(fb2);
     }
   } else {
     const results = await fetchArticResults(minH, maxH);
     if (results.length === 0) {
-      // Widen search if nothing found
+      // Widen search if nothing found in the narrow hue range
       const wider = await fetchArticResults(
         Math.max(0, h - 40),
         Math.min(360, h + 40)
       );
-      if (wider.length === 0) throw new Error("Couldn't reach the museum — try again.");
-      return pickRandom(wider);
+      if (wider.length > 0) return pickRandom(wider);
+      // Last resort: any painting from the museum, ignoring color
+      const fb = await fetchArticResultsFallback();
+      if (fb.length === 0) throw new Error("Couldn't reach the museum — try again.");
+      return pickRandom(fb);
     }
     return pickRandom(results);
   }
@@ -259,7 +266,7 @@ async function fetchArticResults(minH, maxH) {
       query: {
         bool: {
           filter: [
-            { range: { color_h: { gte: Math.round(minH), lte: Math.round(maxH) } } },
+            { range: { 'color.h': { gte: Math.round(minH), lte: Math.round(maxH) } } },
             { exists: { field: 'image_id' } }
           ]
         }
