@@ -158,9 +158,9 @@ function deriveAnchorColor(scoreResult) {
 async function fetchPalette(anchorHSL) {
   const rgb = hslToRgb(anchorHSL.h, anchorHSL.s, anchorHSL.l);
 
-  // Colormind is HTTP only — use fallback palette if blocked by mixed content
+  // Try HTTPS first, fall back to algorithm if unavailable
   try {
-    const res = await fetch('http://colormind.io/api/', {
+    const res = await fetch('https://colormind.io/api/', {
       method: 'POST',
       body: JSON.stringify({
         model: 'default',
