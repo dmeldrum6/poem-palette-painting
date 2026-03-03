@@ -2,7 +2,7 @@
 
 A single-page web experience that weaves together a random poem, a harmonious colour palette, and a matching work of art — all connected by a shared emotional hue.
 
-<img width="1134" height="882" alt="Screenshot of Poem × Palette × Painting" src="https://github.com/user-attachments/assets/d9971f1e-1312-477f-9d83-ca204b548e5e" />
+<img width="1122" height="774" alt="image" src="https://github.com/user-attachments/assets/311266c9-1aa7-48dd-9d0d-d4ab7d3836e5" />
 
 ---
 
